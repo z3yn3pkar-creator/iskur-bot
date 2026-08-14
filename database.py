@@ -1,53 +1,38 @@
-import sqlite3
+import json
+import os
 
 
-DB_NAME = "ilanlar.db"
+DB_NAME = "ilanlar.json"
 
 
 def veritabani_olustur():
-    conn = sqlite3.connect(DB_NAME)
-
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS ilanlar (
-            ilan_no TEXT PRIMARY KEY,
-            baslik TEXT NOT NULL,
-            tarih TEXT,
-            calisma_yeri TEXT
-        )
-    """)
-
-    conn.commit()
-    conn.close()
+    if not os.path.exists(DB_NAME):
+        with open(DB_NAME, "w", encoding="utf-8") as f:
+            json.dump({}, f, ensure_ascii=False, indent=2)
 
 
 def ilan_var_mi(ilan_no):
-    conn = sqlite3.connect(DB_NAME)
+    if not os.path.exists(DB_NAME):
+        return False
 
-    cursor = conn.execute(
-        "SELECT 1 FROM ilanlar WHERE ilan_no = ?",
-        (ilan_no,)
-    )
+    with open(DB_NAME, "r", encoding="utf-8") as f:
+        ilanlar = json.load(f)
 
-    sonuc = cursor.fetchone()
-
-    conn.close()
-
-    return sonuc is not None
+    return ilan_no in ilanlar
 
 
 def ilan_ekle(ilan_no, baslik, tarih, calisma_yeri):
-    conn = sqlite3.connect(DB_NAME)
+    if os.path.exists(DB_NAME):
+        with open(DB_NAME, "r", encoding="utf-8") as f:
+            ilanlar = json.load(f)
+    else:
+        ilanlar = {}
 
-    conn.execute("""
-        INSERT OR IGNORE INTO ilanlar
-        (ilan_no, baslik, tarih, calisma_yeri)
-        VALUES (?, ?, ?, ?)
-    """, (
-        ilan_no,
-        baslik,
-        tarih,
-        calisma_yeri
-    ))
+    ilanlar[ilan_no] = {
+        "baslik": baslik,
+        "tarih": tarih,
+        "calisma_yeri": calisma_yeri
+    }
 
-    conn.commit()
-    conn.close()
+    with open(DB_NAME, "w", encoding="utf-8") as f:
+        json.dump(ilanlar, f, ensure_ascii=False, indent=2)
