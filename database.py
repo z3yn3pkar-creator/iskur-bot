@@ -1,7 +1,6 @@
 import json
 import os
 
-
 DB_NAME = "ilanlar.json"
 
 
