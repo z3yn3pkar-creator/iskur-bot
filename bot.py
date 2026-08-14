@@ -209,29 +209,4 @@ def iskur_kontrol_et():
 
 # Veritabanını hazırla
 veritabani_olustur()
-
-while True:
-    print("\n" + "=" * 60)
-    print("İŞKUR KONTROLÜ BAŞLIYOR")
-    print("=" * 60)
-
-    try:
-        iskur_kontrol_et()
-        print("\nKontrol başarıyla tamamlandı.")
-
-    except Exception as e:
-        print("\n⚠️ Kontrol sırasında hata oluştu:")
-        print(e)
-
-        # Telegram üzerinden hata bildirimi
-        try:
-            telegram_gonder(
-                "⚠️ İŞKUR botunda hata oluştu.\n\n"
-                f"Hata: {e}"
-            )
-        except Exception:
-            pass
-
-    print("\n10 dakika bekleniyor...")
-
-    time.sleep(600)
+iskur_kontrol_et()
